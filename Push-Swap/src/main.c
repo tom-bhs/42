@@ -3,62 +3,100 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tbihoues <tbihoues@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tombihoues <tombihoues@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/18 17:41:41 by tbihoues          #+#    #+#             */
-/*   Updated: 2024/05/26 20:02:25 by tbihoues         ###   ########.fr       */
+/*   Created: 2024/06/06 20:04:39 by tbihoues          #+#    #+#             */
+/*   Updated: 2024/11/12 14:27:24 by tombihoues       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/push_swap.h"
 
+static void	process_args(int argc, char **argv, char ***args)
+{
+	if (argc == 2)
+		*args = ft_split(argv[1], ' ');
+	else
+		*args = argv + 1;
+	if (error_syntax(*args) || error_int(*args) || error_dup(*args))
+	{
+		if (argc == 2)
+			free_split(*args);
+		print_error();
+	}
+}
+
+static void	sort_stack(t_stack **a, t_stack **b)
+{
+	if (!is_sorted(*a))
+	{
+		if (stack_len(*a) == 2)
+			sa(a, 0);
+		else if (stack_len(*a) == 3)
+			sort_three(a);
+		else if (stack_len(*a) <= 5)
+			sort(a, b, 1);
+		else
+			sort(a, b, 0);
+	}
+}
+
 int	main(int argc, char **argv)
 {
-	int		i;
-	t_stack	a;
-	t_stack	b;
-	char	**tab = NULL;
+	t_stack	*a;
+	t_stack	*b;
+	char	**args;
 
-	if (argc < 2)
+	a = NULL;
+	b = NULL;
+	if (argc == 1)
 	{
-		print_error();
+		write(1, "Need Arguments\n", 15);
 		return (0);
 	}
-	i = 1;
+	process_args(argc, argv, &args);
+	fill_stack(&a, args);
+	sort_stack(&a, &b);
+	ft_free_stack(&a);
 	if (argc == 2)
-	{
-		tab = ft_split(argv[1], ' ');
-		while (tab[i] != NULL)
-		{
-			if_not_number(tab[i]);
-			i++;
-		}
-	}
-	else
-	{
-		while (i < argc)
-		{
-			if_not_number(argv[i]);
-			i++;
-		}
-	}
-	init_stack(&a, i -1);
-	init_stack(&b, i -1);
-	if (tab != NULL)
-		parse_args(&a, i, tab);
-	else
-		parse_args(&a, argc, argv);
-	if_doubles(a.data, a.size);
-	i = 0;
-	while (i < a.size)
-	{
-		printf("%d", a.data[i]);
-		i++;
-	}
-	ft_printf("\n");
-	push_swap(&a, &b);
-	free(a.data);
-	free(b.data);
+		free_split(args);
 	return (0);
 }
 
+// int	main(int argc, char **argv)
+// {
+// 	t_stack		*a;
+// 	t_stack		*b;
+// 	char		**args;
+
+// 	a = NULL;
+// 	b = NULL;
+// 	if (argc == 1)
+// 		return (0);
+// 	if (argc == 2)
+// 		args = ft_split(argv[1], ' ');
+// 	else
+// 		args = argv + 1;
+// 	if (error_syntax(args) || error_int(args) || error_dup(args))
+// 	{
+// 		if (argc == 2)
+// 			free_split(args);
+// 		print_error();
+// 	}
+// 	fill_stack(&a, args);
+// 	if (!is_sorted(a))
+// 	{
+// 		if (stack_len(a) == 2)
+// 			sa(&a, 0);
+// 		else if (stack_len(a) == 3)
+// 			sort_three(&a);
+// 		else if (stack_len(a) <= 5)
+// 			sort(&a, &b, 1);
+// 		else
+// 			sort(&a, &b, 0);
+// 	}
+// 	ft_free_stack(&a);
+// 	if (argc == 2)
+// 		free_split(args);
+// 	return (0);
+// }
